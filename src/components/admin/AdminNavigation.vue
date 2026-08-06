@@ -69,7 +69,7 @@ import {
   mdiMonitorDashboard, mdiRocket, mdiRss, mdiSwordCross, mdiTable, mdiTooltipTextOutline,
   mdiAccountKey, mdiFileDocumentOutline, mdiFileDocument, mdiTrophy, mdiLink,
   mdiAccountMultiple, mdiRadar, mdiAccountHeart, mdiApi, mdiTranslate, mdiWaveform,
-  mdiAlertCircleOutline,
+  mdiAlertCircleOutline, mdiCancel,
 } from "@mdi/js";
 
 export default defineComponent({
@@ -200,6 +200,13 @@ export default defineComponent({
             permission: EPermission.Moderation,
             component: "admin-launcher-chat",
             routeName: EAdminRouteName.LAUNCHER_CHAT,
+          },
+          {
+            title: "Cancelled Matches",
+            icon: mdiCancel,
+            permission: EPermission.Moderation,
+            component: "admin-cancelled-matches",
+            routeName: EAdminRouteName.CANCELLED_MATCHES,
           },
         ],
       },
