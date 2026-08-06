@@ -44,7 +44,7 @@
           <v-text-field
             v-model="battleTag"
             label="BattleTag"
-            placeholder="Exact battle tag (case-sensitive)…"
+            placeholder="Full battle tag, e.g. Player#1234…"
             variant="underlined"
             color="primary"
             clearable
