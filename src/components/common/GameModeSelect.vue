@@ -31,18 +31,36 @@ import { activeGameModesWithAT, loadActiveGameModes } from "@/composables/GameMo
 import { EGameMode } from "@/store/types";
 import { mdiControllerClassic } from "@mdi/js";
 import { onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 
-const { gameMode = EGameMode.UNDEFINED, disabledModes = [] } = defineProps<{
+const { gameMode = EGameMode.UNDEFINED, disabledModes = [], includeAllModes = false } = defineProps<{
   gameMode?: EGameMode;
   disabledModes?: EGameMode[];
+  /**
+   * Adds an "All modes" entry (EGameMode.UNDEFINED) to the dropdown and gives the
+   * activator button a label at that value instead of blank. Off by default:
+   * Matches.vue, the other consumer of this component, never selects mode 0 and
+   * must keep seeing the AT-only list and the blank label unchanged.
+   */
+  includeAllModes?: boolean;
 }>();
 
 const emit = defineEmits<{
   gameModeChanged: [gameMode: EGameMode];
 }>();
 
+const { t } = useI18n();
+
+function allModesEntry(): { name: string; id: number } {
+  return { id: EGameMode.UNDEFINED, name: t(`gameModes.${EGameMode[EGameMode.UNDEFINED]}`) };
+}
+
 function gameModes(): Array<{ name: string; id: number }> {
   let modes = activeGameModesWithAT();
+
+  if (includeAllModes) {
+    modes = [allModesEntry(), ...modes];
+  }
 
   if (disabledModes) {
     modes = modes?.filter((x) => !disabledModes?.includes(x.id));
@@ -53,7 +71,7 @@ function gameModes(): Array<{ name: string; id: number }> {
 
 function gameModeName(): string {
   if (!gameMode) {
-    return "";
+    return includeAllModes ? allModesEntry().name : "";
   }
 
   const mode = activeGameModesWithAT()?.filter((g) => g.id == gameMode)[0];

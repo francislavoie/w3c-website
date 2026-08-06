@@ -34,7 +34,11 @@
 
       <v-row dense align="center">
         <v-col cols="12" md="auto">
-          <game-mode-select :game-mode="gameMode" @game-mode-changed="onGameModeChanged" />
+          <game-mode-select
+            :game-mode="gameMode"
+            :include-all-modes="true"
+            @game-mode-changed="onGameModeChanged"
+          />
         </v-col>
         <v-col cols="12" md="3">
           <v-text-field
@@ -66,7 +70,7 @@
               <v-progress-circular indeterminate color="primary" size="32" />
             </td>
           </tr>
-          <tr v-else-if="matches.length === 0">
+          <tr v-else-if="matches.length === 0 && !loadError">
             <td colspan="6" class="text-center py-6 text-medium-emphasis">
               No cancelled matches found.
             </td>
@@ -154,7 +158,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useOauthStore } from "@/store/oauth/store";
 import { EPermission } from "@/store/admin/permission/types";
@@ -300,6 +304,12 @@ export default defineComponent({
     }
 
     onMounted(loadMatches);
+
+    // A debounced filter change can still be pending when the moderator navigates
+    // away; without this cleanup the fetch fires after the component is gone.
+    onUnmounted(() => {
+      if (filterDebounceHandle) clearTimeout(filterDebounceHandle);
+    });
 
     return {
       canModerate,
