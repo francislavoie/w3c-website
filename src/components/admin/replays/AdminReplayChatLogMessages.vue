@@ -93,7 +93,13 @@ export default defineComponent({
   props: {
     matchId: {
       type: String,
-      required: true,
+      required: false,
+      default: "",
+    },
+    floGameId: {
+      type: Number,
+      required: false,
+      default: null,
     },
   },
   setup(props) {
@@ -203,7 +209,11 @@ export default defineComponent({
       showLoginButton.value = false;
 
       try {
-        await replayManagementStore.loadChatLog(props.matchId);
+        if (props.floGameId != null) {
+          await replayManagementStore.loadChatLogByFloId(props.floGameId);
+        } else {
+          await replayManagementStore.loadChatLog(props.matchId);
+        }
         log.value = replayManagementStore.chatLog;
       } catch (error) {
         handleLoadError(error);
