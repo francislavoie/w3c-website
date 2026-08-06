@@ -10,7 +10,6 @@
         </div>
         <player-match-info
           :unfinishedMatch="unfinishedMatch"
-          :no-winner="noWinner"
           :player="player"
           :left="left"
           :big-race-icon="bigRaceIcon"
@@ -60,11 +59,6 @@ export default defineComponent({
       default: false,
     },
     unfinishedMatch: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    noWinner: {
       type: Boolean,
       required: false,
       default: false,
