@@ -159,10 +159,14 @@ export default defineComponent({
       return resumeDurations.value.get(event);
     }
 
+    // "Player {id}" is the slot number the player saw in game (replay-service
+    // builds id as idx + 1). Showing it beside the real name lets a moderator
+    // map an anonymised FFA report ("Player 3 was cheating") back to an account
+    // - the same format AdminCancelledMatches' list row uses.
     function getPlayerName(playerId: number): string {
-      const name = log.value.players.find((x) => x.id == playerId)?.name;
-      if (name == undefined) return "UNKNOWN";
-      return name;
+      const player = log.value.players.find((x) => x.id == playerId);
+      if (player == undefined) return "UNKNOWN";
+      return `Player ${player.id} — ${player.name}`;
     }
 
     function getSenderName(message: ReplayMessage): string {
@@ -197,6 +201,19 @@ export default defineComponent({
         showLoginButton.value = true;
         promptLogin();
         errorMessage.value = "Your session expired while loading the chat log. Please log in again.";
+        return;
+      }
+
+      if (status === 403) {
+        errorMessage.value = "You do not have permission to view this chat log.";
+        return;
+      }
+
+      if (status === 404) {
+        // No chat log exists for this match (e.g. it was cancelled before the game
+        // server was created) - that is normal, not a failure. Leave errorMessage
+        // unset so the timeline.length === 0 branch renders the existing
+        // empty-state message instead of an error alert.
         return;
       }
 

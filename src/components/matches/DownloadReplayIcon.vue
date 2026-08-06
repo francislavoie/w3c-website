@@ -26,6 +26,7 @@
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { API_URL } from "@/config/env";
+import { useOauthStore } from "@/store/oauth/store";
 import { mdiDownload } from "@mdi/js";
 
 const { gameId, floGameId } = defineProps({
@@ -58,7 +59,15 @@ async function downloadReplay(): Promise<void> {
     const url = floGameId != null
       ? `${API_URL}api/replays/by-flo-id/${floGameId}`
       : `${API_URL}api/replays/${gameId}`;
-    const response = await fetch(url);
+    // Send the bearer token when one exists so a moderator lands in their own
+    // rate-limit partition (ReplayRateLimitAttribute.TryGetModeratorBattleTag)
+    // instead of the shared anonymous ip:{ip}:replay bucket. A non-moderator
+    // token simply falls back to the IP limit server-side. When there is no
+    // token, send no Authorization header at all - behaviour for anonymous
+    // visitors on public pages must stay byte-identical to before.
+    const token = useOauthStore().token;
+    const headers: HeadersInit | undefined = token ? { Authorization: `Bearer ${token}` } : undefined;
+    const response = await fetch(url, { headers });
     const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
 
     if (response.status === 429) {

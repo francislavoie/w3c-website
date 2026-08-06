@@ -44,7 +44,7 @@
           <v-text-field
             v-model="battleTag"
             label="BattleTag"
-            placeholder="Search by battle tag…"
+            placeholder="Exact battle tag (case-sensitive)…"
             variant="underlined"
             color="primary"
             clearable

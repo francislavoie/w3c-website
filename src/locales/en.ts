@@ -24,6 +24,7 @@ const en = {
     GM_4ON4: "4 vs 4",
     GM_4ON4_AT: "4 vs 4 AT",
     GM_FFA: "FFA",
+    GM_FOOTMEN_FRENZY: "Footmen Frenzy",
     GM_LEGION_1v1_x20: "Legion TD 1v1",
     GM_LEGION_2v2_X20: "Legion TD 2v2",
     GM_LEGION_4v4_X20: "Legion TD 4v4",
