@@ -28,11 +28,21 @@ import { useI18n } from "vue-i18n";
 import { API_URL } from "@/config/env";
 import { mdiDownload } from "@mdi/js";
 
-const { gameId } = defineProps({
+const { gameId, floGameId } = defineProps({
   gameId: {
     type: String,
-    required: true,
-  }
+    required: false,
+    default: "",
+  },
+  /**
+   * Download by FLO game id instead of match id. Cancelled matches have no
+   * Matchup row, so the id-based route cannot resolve them.
+   */
+  floGameId: {
+    type: Number,
+    required: false,
+    default: null,
+  },
 });
 
 const { t } = useI18n();
@@ -45,7 +55,9 @@ async function downloadReplay(): Promise<void> {
   downloading.value = true;
 
   try {
-    const url = `${API_URL}api/replays/${gameId}`;
+    const url = floGameId != null
+      ? `${API_URL}api/replays/by-flo-id/${floGameId}`
+      : `${API_URL}api/replays/${gameId}`;
     const response = await fetch(url);
     const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
 
@@ -65,7 +77,7 @@ async function downloadReplay(): Promise<void> {
     const downloadUrl = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = downloadUrl;
-    a.download = `${gameId}.w3g`;
+    a.download = `${floGameId ?? gameId}.w3g`;
     document.body.appendChild(a);
     a.click();
     a.remove();

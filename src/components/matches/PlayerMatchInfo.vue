@@ -101,6 +101,10 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
+    noWinner: {
+      type: Boolean,
+      default: false,
+    },
     isAnonymous: {
       type: Boolean,
       required: false,
@@ -134,6 +138,11 @@ export default defineComponent({
 
     const won = computed<string>(() => {
       if (props.unfinishedMatch) return "";
+
+      // Cancelled matches have no result. The payload still carries won: false
+      // because the backend field is a non-nullable bool, so it must be ignored
+      // rather than trusted.
+      if (props.noWinner) return "";
 
       if (Object.prototype.hasOwnProperty.call(props.player, "won")) {
         return props.player.won ? "w3-won" : "w3-lost";
